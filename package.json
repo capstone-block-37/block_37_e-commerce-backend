@@ -1,0 +1,19 @@
+{
+  "name": "block_37_e-commerce-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:dev": "nodemon server/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "pg": "^8.15.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
