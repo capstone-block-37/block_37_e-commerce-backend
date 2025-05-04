@@ -14,6 +14,7 @@ const createTables = async () => {
 
         CREATE TABLE products(
             id UUID PRIMARY KEY NOT NULL,
+            name VARCHAR(255) NOT NULL,
             description VARCHAR(255) NOT NULL,
             img_url VARCHAR(255) NOT NULL,
             price FLOAT NOT NULL
@@ -70,11 +71,12 @@ const createUser = async (
   return response.rows[0];
 };
 
-const createProduct = async (description, img_url, price) => {
-  const SQL = `INSERT INTO products(id, description, img_url, price) VALUES($1, $2, $3, $4) RETURNING *;`;
+const createProduct = async (name, description, img_url, price) => {
+  const SQL = `INSERT INTO products(id, name, description, img_url, price) VALUES($1, $2, $3, $4, $5) RETURNING *;`;
 
   const response = await client.query(SQL, [
     uuid.v4(),
+    name,
     description,
     img_url,
     price,
@@ -83,42 +85,46 @@ const createProduct = async (description, img_url, price) => {
   return response.rows[0];
 };
 
-  const fetchUsers = async () => {
-    const SQL = `SELECT * from users;`;
+const fetchUsers = async () => {
+  const SQL = `SELECT * from users;`;
 
-    const response = await client.query(SQL);
+  const response = await client.query(SQL);
 
-    return response.rows;
-  };
+  return response.rows;
+};
 
-  const fetchProducts = async () => {
-    const SQL = `SELECT * from products;`;
+const fetchProducts = async () => {
+  const SQL = `SELECT * from products;`;
 
-    const response = await client.query(SQL);
+  const response = await client.query(SQL);
 
-    return response.rows;
-  };
+  return response.rows;
+};
 
-  const createUserProduct = async (user_id, product_id, quantity) => {
-    const SQL = `INSERT INTO products(id, user_id, product_id, quantity) VALUES($1, $2, $3, $4) RETURNING *;`;
+const createUserProduct = async (user_id, product_id, quantity) => {
+  const SQL = `INSERT INTO user_products(id, user_id, product_id, quantity) VALUES($1, $2, $3, $4) RETURNING *;`;
 
-    const response = await client.query(SQL, [
-      uuid.v4(),
-      user_id,
-      product_id,
-      quantity,
-    ]);
+  const response = await client.query(SQL, [
+    uuid.v4(),
+    user_id,
+    product_id,
+    quantity,
+  ]);
 
-    return response.rows[0];
-  };
+  return response.rows[0];
+};
 
-    const fetchUserProduct = async () => {
-      const SQL = `SELECT * from user_products WHERE user_id = $1;`;
+const fetchUserProduct = async () => {
+  const SQL = `SELECT * from user_products WHERE user_id = $1;`;
+  const response = await client.query(SQL);
 
-      const response = await client.query(SQL);
+  return response.rows;
+};
 
-      return response.rows;
-    };
+async function destroyUserProducts(id, user_id) {
+  const SQL = `DELETE FROM user_products WHERE id=$1 AND user_id=$2`;
+  await client.query(SQL, [id, user_id]);
+}
 
 module.exports = {
   client,
@@ -129,4 +135,5 @@ module.exports = {
   fetchProducts,
   createUserProduct,
   fetchUserProduct,
+  destroyUserProducts,
 };
