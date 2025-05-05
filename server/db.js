@@ -126,6 +126,14 @@ async function destroyUserProducts(id, user_id) {
   await client.query(SQL, [id, user_id]);
 }
 
+const fetchProductById = async (id) => {
+  const SQL = `SELECT * FROM products WHERE id = $1;`;
+
+  const response = await client.query(SQL, [id]);
+
+  return response.rows[0];
+};
+
 module.exports = {
   client,
   createTables,
@@ -136,4 +144,5 @@ module.exports = {
   createUserProduct,
   fetchUserProduct,
   destroyUserProducts,
+  fetchProductById,
 };

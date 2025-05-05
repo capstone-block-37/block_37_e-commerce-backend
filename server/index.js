@@ -10,6 +10,7 @@ const {
   fetchProducts,
   createUserProduct,
   fetchUserProduct,
+  fetchProductById,
 } = require("./db");
 
 const server = express();
@@ -48,5 +49,20 @@ server.get("/api/users/:id/userProducts", async (req, res, next) => {
     res.send(products);
   } catch (error) {
     next(error);
+  }
+});
+
+
+server.get("/api/product/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const product = await fetchProductById(id); 
+    if (!product) {
+      res.status(404).send({ error: "Product not found" }); 
+    } else {
+      res.send(product);
+    }
+  } catch (error) {
+    next(error)
   }
 });
