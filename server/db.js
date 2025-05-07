@@ -27,7 +27,7 @@ const createTables = async () => {
             is_admin BOOLEAN NOT NULL DEFAULT false,
             name VARCHAR(255) NOT NULL,
             email_address VARCHAR(255),
-            mailing_address VARCHAR(255) NOT NULL,
+            mailing_address VARCHAR(255),
             phone_number VARCHAR(255),
             billing_address VARCHAR(255)
 );

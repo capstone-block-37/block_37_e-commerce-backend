@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
+const bcrypt = require("bcrypt");
 const {
   client,
   createTables,
@@ -18,7 +19,7 @@ client.connect();
 
 server.use(express.json());
 server.use(morgan("dev"));
-  server.use(cors());
+server.use(cors());
 
 const port = process.env.PORT || 3033;
 server.listen(port, () => console.log(`server listening on port ${port}`));
@@ -26,7 +27,7 @@ server.listen(port, () => console.log(`server listening on port ${port}`));
 server.get("/api/users", async (req, res, next) => {
   try {
     const users = await fetchUsers();
-    console.log(users)
+    console.log(users);
     res.send(users);
   } catch (error) {
     next(error);
@@ -35,7 +36,7 @@ server.get("/api/users", async (req, res, next) => {
 
 server.get("/api/products", async (req, res, next) => {
   try {
-    console.log("hello")
+    console.log("hello");
     const products = await fetchProducts();
     res.send(products);
   } catch (error) {
@@ -52,17 +53,39 @@ server.get("/api/users/:id/userProducts", async (req, res, next) => {
   }
 });
 
-
 server.get("/api/product/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
-    const product = await fetchProductById(id); 
+    const product = await fetchProductById(id);
     if (!product) {
-      res.status(404).send({ error: "Product not found" }); 
+      res.status(404).send({ error: "Product not found" });
     } else {
       res.send(product);
     }
   } catch (error) {
-    next(error)
+    next(error);
+  }
+});
+
+server.post("/api/register", async (req, res, next) => {
+  try {
+    const { name, username, password } = req.body;
+
+    const hashedPasword = await bcrypt.hash(
+      password,
+      parseInt(process.env.SALT) || 5
+    );
+
+    const user = await createUser({
+      username,
+      password: hashedPassword,
+      email,
+    });
+
+    const token = jwt.sign({ id: user.id }, process.env.JWT);
+
+    res.status(201).send({ token });
+  } catch (error) {
+    next(error);
   }
 });
