@@ -2,6 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken")
 const {
   client,
   createTables,
@@ -69,22 +70,50 @@ server.get("/api/product/:id", async (req, res, next) => {
 
 server.post("/api/register", async (req, res, next) => {
   try {
-    const { name, username, password } = req.body;
+    const { fullname, username, password, email } = req.body;
 
-    const hashedPasword = await bcrypt.hash(
+    const hashedPassword = await bcrypt.hash(
       password,
       parseInt(process.env.SALT) || 5
     );
 
     const user = await createUser({
+      fullname,
       username,
       password: hashedPassword,
       email,
     });
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT);
+    const token = jwt.sign({ id: user.id }, process.env.JWT || "hello");
 
     res.status(201).send({ token });
+  } catch (error) {
+    next(error);
+  }
+});
+
+server.post("/api/login", async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+
+    const users = await fetchUsers();
+    const user = users.find((user) => user.username === username);
+
+    if (!user) {
+      res.status(401).send({ error: "Invalid username or password" });
+      return;
+    }
+
+    const isPassword = await bcrypt.compare(password, user.password);
+
+    if (!isPassword) {
+      res.status(401).send({ error: "Invalid username or password" });
+      return;
+    }
+
+    const token = jwt.sign({ id: user.id }, process.env.JWT || "hello");
+
+    res.send({ token });
   } catch (error) {
     next(error);
   }

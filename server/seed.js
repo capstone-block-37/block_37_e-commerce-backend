@@ -15,16 +15,12 @@ const seed = async () => {
   console.log("table created ", createTables);
 
   const [omar, radio, phone, watch, computer] = await Promise.all([
-    createUser(
-      "OmarB",
-      "pass123!",
-      false,
-      "Omar Brimfield",
-      "o@gmail.com",
-      "123 Main st, NY, NY, 10034",
-      "212-249-8506",
-      "123 Main st, NY, NY, 10034"
-    ),
+    createUser({
+      "fullname": "Omar Brimfield",
+      "email": "o@gmail.com",
+      "username": "OmarB",
+      "password": "pass123!",
+}),
     createProduct(
       "radio",
       "Al contrario del pensamiento popular, el texto de Lorem Ipsum no es simplemente texto aleatorio",
