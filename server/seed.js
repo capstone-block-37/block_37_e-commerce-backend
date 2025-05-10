@@ -16,15 +16,15 @@ const seed = async () => {
 
   const [omar, radio, phone, watch, computer] = await Promise.all([
     createUser({
-      "fullname": "Omar Brimfield",
-      "email": "o@gmail.com",
-      "username": "OmarB",
-      "password": "pass123!",
-}),
+      fullname: "Omar Brimfield",
+      email: "o@gmail.com",
+      username: "OmarB",
+      password: "pass123!",
+    }),
     createProduct(
       "radio",
       "Al contrario del pensamiento popular, el texto de Lorem Ipsum no es simplemente texto aleatorio",
-      "https://unsplash.com/photos/a-red-square-object-with-a-question-mark-on-it-_HrwmmfEJFc",
+      "https://plus.unsplash.com/premium_photo-1677589330393-e458a706f352?q=80&w=3000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       79.99
     ),
     createProduct(
