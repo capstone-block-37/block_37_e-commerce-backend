@@ -1,10 +1,24 @@
 const pg = require("pg");
 const uuid = require("uuid");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const client = new pg.Client(
   process.env.DATABASE_URL || "postgres://localhost/acme_ecomm_db"
 );
+
+const findUserByToken = async (token) => {
+  //verify the token
+  const { id } = await jwt.verify(token, process.env.JWT || "hello");
+
+  console.log("hello id", id)
+
+  const SQL = `SELECT * FROM users WHERE id = $1`;
+
+  const response = await client.query(SQL, [id]);
+
+  return response.rows[0];
+};
 
 const createTables = async () => {
   const SQL = `
@@ -101,9 +115,9 @@ const createUserProduct = async (user_id, product_id, quantity) => {
   return response.rows[0];
 };
 
-const fetchUserProduct = async () => {
+const fetchUserProduct = async (id) => {
   const SQL = `SELECT * from user_products WHERE user_id = $1;`;
-  const response = await client.query(SQL);
+  const response = await client.query(SQL, [id]);
 
   return response.rows;
 };
@@ -132,4 +146,5 @@ module.exports = {
   fetchUserProduct,
   destroyUserProducts,
   fetchProductById,
+  findUserByToken,
 };
