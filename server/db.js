@@ -2,16 +2,24 @@ const pg = require("pg");
 const uuid = require("uuid");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+require("dotenv");
 
-const client = new pg.Client(
-  process.env.DATABASE_URL || "postgres://localhost/acme_ecomm_db"
-);
+const connectionString = process.env.DATABASE_URL 
+//  "postgres://localhost/acme_ecomm_db";
+
+const client = new pg.Client({
+  connectionString,
+  ssl:
+    process.env.NODE_ENV === "production" || process.env.NODE_ENV === "staging"
+      ? { rejectUnauthorized: false }
+      : undefined,
+});
 
 const findUserByToken = async (token) => {
   //verify the token
   const { id } = await jwt.verify(token, process.env.JWT || "hello");
 
-  console.log("hello id", id)
+  console.log("hello id", id);
 
   const SQL = `SELECT * FROM users WHERE id = $1`;
 
